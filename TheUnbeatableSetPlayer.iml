@@ -7,6 +7,6 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="webcam-capture-0.3.10" level="project" />
+    <orderEntry type="library" name="webcam-capture-0.3.10" level="project" />
   </component>
 </module>
