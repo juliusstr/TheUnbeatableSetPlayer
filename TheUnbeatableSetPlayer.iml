@@ -7,16 +7,5 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library name="webcam-capture-0.3.10">
-        <CLASSES>
-          <root url="jar://$USER_HOME$/Documents/webcam-capture-0.3.10-dist/webcam-capture-0.3.10.jar!/" />
-          <root url="file://$USER_HOME$/Documents/webcam-capture-0.3.10-dist/libs" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-        <jarDirectory url="file://$USER_HOME$/Documents/webcam-capture-0.3.10-dist/libs" recursive="false" />
-      </library>
-    </orderEntry>
   </component>
 </module>
