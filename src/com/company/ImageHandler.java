@@ -34,6 +34,22 @@ public class ImageHandler {
         return rotatedImage;
     }
 
+    public static BufferedImage mergeBackgroudAndCardPicture (BufferedImage backgroud, BufferedImage card, int xpos, int ypos) throws PosException{
+        int w = Math.max(backgroud.getWidth(), card.getWidth());
+        int h = Math.max(backgroud.getHeight(), card.getHeight());
+        BufferedImage combined = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        if (xpos+card.getWidth()>w || ypos+ card.getHeight()>h){
+            throw new PosException("card out of bounds");
+        }
+        // paint both images, preserving the alpha channels
+        Graphics g = combined.getGraphics();
+        g.drawImage(backgroud, 0, 0, null);
+        g.drawImage(card, xpos, ypos, null);
+
+        g.dispose();
+        return combined;
+    }
+
 }
 
 
