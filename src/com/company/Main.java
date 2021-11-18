@@ -22,7 +22,7 @@ public class Main {
         webcam.open();
         BufferedImage image = webcam.getImage();
         webcam.close();
-        image = ImageHandler.rotateImage(image, 45);
+        image = ImageHandler.rotateImage(image, 0);
 
         ImageIO.write(image, "PNG", new File("test.png"));
 
