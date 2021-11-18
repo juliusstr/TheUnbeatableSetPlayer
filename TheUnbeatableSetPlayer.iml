@@ -10,6 +10,6 @@
     <orderEntry type="library" name="webcam-capture-0.3.10" level="project" />
     <orderEntry type="library" name="bridj-0.6.2" level="project" />
     <orderEntry type="library" name="slf4j-api-1.7.2" level="project" />
-    <orderEntry type="library" name="opencv-3415 (3)" level="project" />
+    <orderEntry type="library" name="opencv-3415" level="project" />
   </component>
 </module>
