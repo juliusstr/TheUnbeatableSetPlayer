@@ -6,8 +6,20 @@ import org.opencv.imgproc.Imgproc;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ImageHandler {
+    private final double cornerYmin=2.5;
+    private final double cornerYmax=23;
+
+    private final int zoom=4;
+    private final int cardW = (int) 57 * zoom;
+    private final int cardH = (int) 87 * zoom;
+    /*private final int cornerXmin = (int) 2*zoom;
+    private final int cornerXmax = (int) (10.5*zoom);
+    private final int cornerYmin = (int) (2.5*zoom);
+    private final int cornerYmax = int (cornerYmax*zoom);//todo slet mig måske*/
 
     public static BufferedImage rotateImage(BufferedImage buffImage, double angle) {
         double radian = Math.toRadians(angle);
@@ -93,7 +105,7 @@ public class ImageHandler {
         return Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
     }*/
 
-    public static Mat extract_card ( Mat img, double min_focus) throws NotInFocus{
+    public static Mat extract_card ( Mat img, double min_focus) throws NotInFocus, NoCardDetected{
         if (min_focus>varianceOfLaplacian(img)){
             throw new NotInFocus ("The picture is not in focus");
         } else {
@@ -105,6 +117,44 @@ public class ImageHandler {
             Mat edge = new Mat();
             Imgproc.Canny(noise,edge,30,200);
             Imgcodecs.imwrite("edge.png", edge); //todo fjern
+            List<MatOfPoint> contours = new ArrayList<>();
+            Mat hierarchy = new Mat();
+            Imgproc.findContours(edge.clone(),contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
+            MatOfPoint conture = new MatOfPoint();
+            /*for (int i = 0; i < contours.size(); i++) {
+                if (Imgproc.contourArea(contours.get(i))>Imgproc.contourArea(conture)){
+                    conture = contours.get(i);
+                }
+            }*/
+            double maxArea = 0;
+            int index = 0;
+            for (int i = 0; i < contours.size(); i++) {
+                System.out.println(Imgproc.contourArea(contours.get(i)));
+                if (Imgproc.contourArea(contours.get(i))>maxArea){
+                    maxArea = Imgproc.contourArea(contours.get(i));
+                    index = i;
+                }
+            }
+            MatOfPoint cnt = contours.get(index);
+            MatOfPoint2f cnt2f = new MatOfPoint2f(cnt.toArray());
+            RotatedRect rect = Imgproc.minAreaRect(cnt2f);
+            Mat box = new Mat();
+            Imgproc.boxPoints(rect,box);
+            double areaCnt = Imgproc.contourArea(cnt);
+            double areaBox = Imgproc.contourArea(box);
+            boolean valid = areaCnt/areaBox>0.95;
+
+            if (!valid){
+                throw new NoCardDetected ("No rectangle was detected in img");
+            } else {
+                int xr = (int) rect.center.x;
+                int yr = (int) rect.center.y;
+                int wr = (int) rect.size.width;
+                int hr = (int) rect.size.height;
+                double thetar = rect.angle;
+
+            }
+
             return img;
         }
 

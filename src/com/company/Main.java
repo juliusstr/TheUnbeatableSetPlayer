@@ -17,7 +17,7 @@ import java.nio.file.Path;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, PosException, NotInFocus {
+    public static void main(String[] args) throws IOException, PosException, NotInFocus, NoCardDetected {
         System.loadLibrary( Core.NATIVE_LIBRARY_NAME );
 
         Webcam webcam = Webcam.getWebcams().get(0);
@@ -35,7 +35,7 @@ public class Main {
         ImageIO.write(image, "PNG", new File("test2.png"));*/
 
         Mat image_mat = Imgcodecs.imread("cardtest.png"); // BGR type
-        ImageHandler.varianceOfLaplacian(image_mat);
+        //ImageHandler.varianceOfLaplacian(image_mat);
         ImageHandler.extract_card(image_mat, 120.);
 
 
