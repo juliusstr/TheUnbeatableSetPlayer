@@ -17,7 +17,7 @@ import java.nio.file.Path;
 
 public class Main {
 
-    public static void main(String[] args) throws IOException, PosException {
+    public static void main(String[] args) throws IOException, PosException, NotInFocus {
         System.loadLibrary( Core.NATIVE_LIBRARY_NAME );
 
         Webcam webcam = Webcam.getWebcams().get(0);
@@ -34,10 +34,11 @@ public class Main {
         BufferedImage image = ImageHandler.mergeBackgroudAndCardPicture(bacgeoud,card, 200,10);
         ImageIO.write(image, "PNG", new File("test2.png"));*/
 
-        Mat image_mat = Imgcodecs.imread("cardtest.png");
-        double i = ImageHandler.varianceOfLaplacian(image_mat);
+        Mat image_mat = Imgcodecs.imread("cardtest.png"); // BGR type
+        ImageHandler.varianceOfLaplacian(image_mat);
+        ImageHandler.extract_card(image_mat, 120.);
 
-        System.out.println(i);
+
 
         /*System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         Mat mat = Mat.eye(5, 5, CvType.CV_8UC1);

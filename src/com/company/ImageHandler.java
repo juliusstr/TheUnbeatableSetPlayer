@@ -62,8 +62,8 @@ public class ImageHandler {
 
         Mat grayScaleImage = new Mat();
         Imgproc.cvtColor(image, grayScaleImage, Imgproc.COLOR_RGB2GRAY);
-        Imgproc.Laplacian( grayScaleImage, image, ddepth, kernel_size, scale, delta, Core.BORDER_DEFAULT );
-        Imgcodecs.imwrite("Laplacian.png", image); //todo fjern
+        Mat lap = new Mat();
+        Imgproc.Laplacian( grayScaleImage, lap, ddepth, kernel_size, scale, delta, Core.BORDER_DEFAULT );
         /*double mean = 0;
         for (int i = 0; i < image.rows(); i++) {
             for (int j = 0; j < image.cols(); j++) {
@@ -76,7 +76,7 @@ public class ImageHandler {
         System.out.println(mean);*/
         //converting back to CV_8U generate the standard deviation
         Mat absLplImage = new Mat();
-        Core.convertScaleAbs(image, absLplImage);
+        Core.convertScaleAbs(lap, absLplImage);
 
         // get the standard deviation of the absolute image as input for the sharpness score
         MatOfDouble median = new MatOfDouble();
@@ -93,6 +93,22 @@ public class ImageHandler {
         return Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
     }*/
 
+    public static Mat extract_card ( Mat img, double min_focus) throws NotInFocus{
+        if (min_focus>varianceOfLaplacian(img)){
+            throw new NotInFocus ("The picture is not in focus");
+        } else {
+            Mat gray = new Mat();
+            Imgproc.cvtColor(img, gray, Imgproc.COLOR_RGB2GRAY);
+            Mat noise = new Mat();
+            Imgproc.bilateralFilter(gray, noise,11,17,17);
+
+            Mat edge = new Mat();
+            Imgproc.Canny(noise,edge,30,200);
+            Imgcodecs.imwrite("edge.png", edge); //todo fjern
+            return img;
+        }
+
+    }
 }
 
 
