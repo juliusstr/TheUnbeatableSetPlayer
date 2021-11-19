@@ -1,5 +1,9 @@
 package com.company;
 
+import org.opencv.core.*;
+import org.opencv.imgcodecs.Imgcodecs;
+import org.opencv.imgproc.Imgproc;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
@@ -49,6 +53,45 @@ public class ImageHandler {
         g.dispose();
         return combined;
     }
+
+    public static double varianceOfLaplacian (Mat image){
+        int ddepth = CvType.CV_64F;
+        int kernel_size = 3;
+        int scale = 1;
+        int delta = 0;
+
+        Mat grayScaleImage = new Mat();
+        Imgproc.cvtColor(image, grayScaleImage, Imgproc.COLOR_RGB2GRAY);
+        Imgproc.Laplacian( grayScaleImage, image, ddepth, kernel_size, scale, delta, Core.BORDER_DEFAULT );
+        Imgcodecs.imwrite("Laplacian.png", image); //todo fjern
+        /*double mean = 0;
+        for (int i = 0; i < image.rows(); i++) {
+            for (int j = 0; j < image.cols(); j++) {
+                System.out.println(Double.parseDouble(Arrays.toString(image.get(i,j)).replace("[","").replace("]","")));
+                mean += Double.parseDouble(Arrays.toString(image.get(i,j)).replace("[","").replace("]",""));
+            }
+        }
+        mean = mean / image.total();
+
+        System.out.println(mean);*/
+        //converting back to CV_8U generate the standard deviation
+        Mat absLplImage = new Mat();
+        Core.convertScaleAbs(image, absLplImage);
+
+        // get the standard deviation of the absolute image as input for the sharpness score
+        MatOfDouble median = new MatOfDouble();
+        MatOfDouble std = new MatOfDouble();
+        Core.meanStdDev(absLplImage, median, std);
+
+        return Math.pow(std.get(0, 0)[0], 2);
+    }
+
+    /*public static Mat BufferedImage2Mat(BufferedImage image) throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(image, "jpg", byteArrayOutputStream);
+        byteArrayOutputStream.flush();
+        return Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
+    }*/
 
 }
 
