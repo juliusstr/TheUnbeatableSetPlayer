@@ -5,10 +5,17 @@ import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
+import javax.imageio.ImageIO;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
+
+import static javax.swing.WindowConstants.DISPOSE_ON_CLOSE;
 
 public class ImageHandler {
     private final double cornerYmin=2.5;
@@ -106,7 +113,7 @@ public class ImageHandler {
         return Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
     }*/
 
-    public static void extract_card_to_png ( Mat img, double min_focus) throws NotInFocus, NoCardDetected{
+    public static void extract_card_to_png (Mat img, double min_focus, String path) throws NotInFocus, NoCardDetected{
         if (min_focus>varianceOfLaplacian(img)){
             throw new NotInFocus ("The picture is not in focus");
         } else {
@@ -117,16 +124,9 @@ public class ImageHandler {
 
             Mat edge = new Mat();
             Imgproc.Canny(noise,edge,30,200);
-            Imgcodecs.imwrite("edge.png", edge); //todo fjern
             List<MatOfPoint> contours = new ArrayList<>();
             Mat hierarchy = new Mat();
             Imgproc.findContours(edge.clone(),contours, hierarchy, Imgproc.RETR_TREE, Imgproc.CHAIN_APPROX_SIMPLE);
-            MatOfPoint conture = new MatOfPoint();
-            /*for (int i = 0; i < contours.size(); i++) {
-                if (Imgproc.contourArea(contours.get(i))>Imgproc.contourArea(conture)){
-                    conture = contours.get(i);
-                }
-            }*/
             double maxArea = 0;
             int index = 0;
             for (int i = 0; i < contours.size(); i++) {
@@ -161,22 +161,11 @@ public class ImageHandler {
                 Mat refCardRot = new Mat(4, 2, CvType.CV_32FC1);
 
                 Mat mp = new Mat();
-                System.out.println(box.toString());
-                System.out.println(refCard.toString());
-                for (int i = 0; i < box.cols(); i++) {//todo fjenr mig
-                    for (int j = 0; j < box.rows(); j++) {
-                        System.out.print(box.get(j,i)[0] +  "  ");
-                    }
-                    System.out.println("");
-                }
 
                 refCard.put(0,0,0); refCard.put(0,1,cardW);
                 refCard.put(1,0,0); refCard.put(1,1,0);
                 refCard.put(2,0,cardH); refCard.put(2,1,0);
                 refCard.put(3,0,cardH); refCard.put(3,1,cardW);
-
-
-
 
                 refCardRot.put(0,0,0); refCardRot.put(0,1,cardH);
                 refCardRot.put(1,0,0); refCardRot.put(1,1,0);
@@ -186,24 +175,24 @@ public class ImageHandler {
                 Mat imgWarp = new Mat();
                 if (wr>hr){
                     mp = Imgproc.getPerspectiveTransform(box,refCard);
-                    System.out.println("her");
                     Imgproc.warpPerspective(img,imgWarp, mp, new Size(cardH,cardW));
+                    Core.rotate(imgWarp, imgWarp, Core.ROTATE_90_CLOCKWISE);
                 } else {
                     mp = Imgproc.getPerspectiveTransform(box,refCardRot);
-                    System.out.println("ikke her");
                     Imgproc.warpPerspective(img,imgWarp, mp, new Size(cardW,cardH));
                 }
 
 
 
 
-                Imgcodecs.imwrite("imgwrap.png", imgWarp); //todo fjern
+                Imgcodecs.imwrite(path, imgWarp); //todo fjern
 
 
             }
         }
 
     }
+
 }
 
 
