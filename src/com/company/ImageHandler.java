@@ -1,6 +1,7 @@
 package com.company;
 
 import org.opencv.core.*;
+import org.opencv.core.Point;
 import org.opencv.imgcodecs.Imgcodecs;
 import org.opencv.imgproc.Imgproc;
 
@@ -13,9 +14,9 @@ public class ImageHandler {
     private final double cornerYmin=2.5;
     private final double cornerYmax=23;
 
-    private final int zoom=4;
-    private final int cardW = (int) 57 * zoom;
-    private final int cardH = (int) 87 * zoom;
+    private static int zoom=4;
+    private static int cardW = (int) 57 * zoom;
+    private static int cardH = (int) 87 * zoom;
     /*private final int cornerXmin = (int) 2*zoom;
     private final int cornerXmax = (int) (10.5*zoom);
     private final int cornerYmin = (int) (2.5*zoom);
@@ -105,7 +106,7 @@ public class ImageHandler {
         return Imgcodecs.imdecode(new MatOfByte(byteArrayOutputStream.toByteArray()), Imgcodecs.CV_LOAD_IMAGE_UNCHANGED);
     }*/
 
-    public static Mat extract_card ( Mat img, double min_focus) throws NotInFocus, NoCardDetected{
+    public static void extract_card_to_png ( Mat img, double min_focus) throws NotInFocus, NoCardDetected{
         if (min_focus>varianceOfLaplacian(img)){
             throw new NotInFocus ("The picture is not in focus");
         } else {
@@ -145,7 +146,7 @@ public class ImageHandler {
             boolean valid = areaCnt/areaBox>0.95;
 
             if (!valid){
-                throw new NoCardDetected ("No rectangle was detected in img");
+                throw new NoCardDetected ("No rectangle was detected in img  " + areaCnt/areaBox + "%");
             } else {
                 int xr = (int) rect.center.x;
                 int yr = (int) rect.center.y;
@@ -153,9 +154,53 @@ public class ImageHandler {
                 int hr = (int) rect.size.height;
                 double thetar = rect.angle;
 
-            }
+                int cardHcell = 4;
+                int cardWcell = 2;
 
-            return img;
+                Mat refCard = new Mat(4, 2, CvType.CV_32FC1);
+                Mat refCardRot = new Mat(4, 2, CvType.CV_32FC1);
+
+                Mat mp = new Mat();
+                System.out.println(box.toString());
+                System.out.println(refCard.toString());
+                for (int i = 0; i < box.cols(); i++) {//todo fjenr mig
+                    for (int j = 0; j < box.rows(); j++) {
+                        System.out.print(box.get(j,i)[0] +  "  ");
+                    }
+                    System.out.println("");
+                }
+
+                refCard.put(0,0,0); refCard.put(0,1,cardW);
+                refCard.put(1,0,0); refCard.put(1,1,0);
+                refCard.put(2,0,cardH); refCard.put(2,1,0);
+                refCard.put(3,0,cardH); refCard.put(3,1,cardW);
+
+
+
+
+                refCardRot.put(0,0,0); refCardRot.put(0,1,cardH);
+                refCardRot.put(1,0,0); refCardRot.put(1,1,0);
+                refCardRot.put(2,0,cardW); refCardRot.put(2,1,0);
+                refCardRot.put(3,0,cardW); refCardRot.put(3,1,cardH);
+
+                Mat imgWarp = new Mat();
+                if (wr>hr){
+                    mp = Imgproc.getPerspectiveTransform(box,refCard);
+                    System.out.println("her");
+                    Imgproc.warpPerspective(img,imgWarp, mp, new Size(cardH,cardW));
+                } else {
+                    mp = Imgproc.getPerspectiveTransform(box,refCardRot);
+                    System.out.println("ikke her");
+                    Imgproc.warpPerspective(img,imgWarp, mp, new Size(cardW,cardH));
+                }
+
+
+
+
+                Imgcodecs.imwrite("imgwrap.png", imgWarp); //todo fjern
+
+
+            }
         }
 
     }

@@ -20,14 +20,14 @@ public class Main {
     public static void main(String[] args) throws IOException, PosException, NotInFocus, NoCardDetected {
         System.loadLibrary( Core.NATIVE_LIBRARY_NAME );
 
-        Webcam webcam = Webcam.getWebcams().get(0);
+        /*Webcam webcam = Webcam.getWebcams().get(0);
         webcam.setViewSize(new Dimension(640,480));
         webcam.open();
         BufferedImage image = webcam.getImage();
         webcam.close();
         image = ImageHandler.rotateImage(image, 0);
 
-        ImageIO.write(image, "PNG", new File("cardtest.PNG"));
+        ImageIO.write(image, "PNG", new File("cardtest.PNG"));/*
 
         /*BufferedImage bacgeoud = ImageIO.read(new File("test.png"));
         BufferedImage card = ImageIO.read(new File("test1.png"));
@@ -36,7 +36,7 @@ public class Main {
 
         Mat image_mat = Imgcodecs.imread("cardtest.png"); // BGR type
         //ImageHandler.varianceOfLaplacian(image_mat);
-        ImageHandler.extract_card(image_mat, 120.);
+        ImageHandler.extract_card_to_png(image_mat, 120.);
 
 
 
