@@ -15,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 public class Main {
 
@@ -35,9 +36,13 @@ public class Main {
         BufferedImage image = ImageHandler.mergeBackgroudAndCardPicture(bacgeoud,card, 200,10);
         ImageIO.write(image, "PNG", new File("test2.png"));*/
 
-        Mat image_mat = Imgcodecs.imread("1.png"); // BGR type
+        Mat image_mat = Imgcodecs.imread("cardtest.png"); // BGR type
         //ImageHandler.varianceOfLaplacian(image_mat);
-        ImageHandler.extract_card_to_png(image_mat, 120., "imgWrap.png");
+        //ImageHandler.extract_card_to_png(image_mat, 120., "imgWrap.png", 0.9);
+        List<Mat> cards = ImageHandler.extractCards(image_mat, 120,0.9,100);
+        for (int i = 0; i < cards.size(); i++) {
+            Imgcodecs.imwrite("allCardsNr" + i +".png", cards.get(i));
+        }
 
         /*System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
         Mat mat = Mat.eye(5, 5, CvType.CV_8UC1);
