@@ -1,0 +1,26 @@
+
+Number 1. char
+    1 - 1
+    2 - 2
+    3 - 3
+
+shape 2. char
+    1 - ovals
+    2 - squiggles
+    3 - diamond
+
+colour 3. char
+    1 - red
+    2 - purple
+    3 - green
+
+
+shading 4. char
+    1 - solid
+    2 - striped
+    3 - outlined
+
+
+eks
+2133.png ville være et kort med 2 ovaler som er grønne og tomme
+1231.png ville være et kort med 1 squiggles som er grønne og fyldte.
